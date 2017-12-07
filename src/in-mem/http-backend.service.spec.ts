@@ -15,6 +15,7 @@ import { HttpHeroService } from '../app/http-hero.service';
 
 import { HeroInMemDataService } from '../app/hero-in-mem-data.service';
 import { HeroInMemDataOverrideService } from '../app/hero-in-mem-data-override.service';
+import { HeroInMemDataOverrideIdService } from '../app/hero-in-mem-data-override-id.service';
 import { HeroServiceCoreSpec } from '../app/hero.service.spec';
 
 class Nobody { id: string; name: string; }
@@ -47,7 +48,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
         },
         failure
-      );
+        );
     }));
 
     it('GET should be a "cold" observable', async(() => {
@@ -67,7 +68,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
         },
         failure
-      );
+        );
     }));
 
     it('GET should wait until after delay to respond', async(() => {
@@ -96,14 +97,14 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
         },
         failure
-      );
+        );
     }));
 
     it('should 404 when GET unknown collection (after delay)', async(() => {
       let gotError = false;
       const url = 'api/unknown-collection';
       http.get(url)
-      .subscribe(
+        .subscribe(
         _ => {
           console.log(_);
           fail(`should not have found data for '${url}'`);
@@ -125,7 +126,7 @@ describe('Http Backend Service', () => {
           expect(hero).toBeDefined('should find hero with id=1');
         },
         failure
-      );
+        );
     }));
 
     // test where id is string that looks like a number
@@ -137,7 +138,7 @@ describe('Http Backend Service', () => {
           expect(hero).toBeDefined('should find string with id="10"');
         },
         failure
-      );
+        );
     }));
 
     it('should return 1-item array for GET app/heroes/?id=1', async(() => {
@@ -148,7 +149,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBe(1, 'should find one hero w/id=1');
         },
         failure
-      );
+        );
     }));
 
     it('should return 1-item array for GET app/heroes?id=1', async(() => {
@@ -159,7 +160,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBe(1, 'should find one hero w/id=1');
         },
         failure
-      );
+        );
     }));
 
     it('should return undefined for GET app/heroes?id=not-found-id', async(() => {
@@ -170,13 +171,13 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBe(0);
         },
         failure
-      );
+        );
     }));
 
     it('should return 404 for GET app/heroes/not-found-id', async(() => {
       const url = 'api/heroes/123456';
       http.get(url)
-      .subscribe(
+        .subscribe(
         _ => {
           console.log(_);
           fail(`should not have found data for '${url}'`);
@@ -184,7 +185,7 @@ describe('Http Backend Service', () => {
         err => {
           expect(err.status).toBe(404, 'should have 404 status');
         }
-      );
+        );
     }));
 
     it('can generate the id when add a hero with no id', async(() => {
@@ -209,7 +210,7 @@ describe('Http Backend Service', () => {
           expect(nobodies.length).toBe(0, 'should have no nobodies');
         },
         failure
-      );
+        );
     }));
 
     it('can add a nobody with an id to empty nobodies collection', async(() => {
@@ -273,7 +274,7 @@ describe('Http Backend Service', () => {
           expect(sizes.stringers).toBe(0, 'reset should have cleared the stringers');
         },
         failure
-      );
+        );
     }
 
   });
@@ -303,7 +304,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
         },
         failure
-      );
+        );
     }));
 
     it('can translate `foo/heroes` to `heroes` via `parsedRequestUrl` override', async(() => {
@@ -315,7 +316,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
         },
         failure
-      );
+        );
     }));
 
     it('can get villains', async(() => {
@@ -327,13 +328,13 @@ describe('Http Backend Service', () => {
           expect(villains.length).toBeGreaterThan(0, 'should have villains');
         },
         failure
-      );
+        );
     }));
 
     it('should 404 when POST to villains', async(() => {
       const url = 'api/villains';
       http.post(url, {id: 42, name: 'Dr. Evil'})
-      .subscribe(
+        .subscribe(
         _ => {
           console.log(_);
           fail(`should not have POSTed data for '${url}'`);
@@ -341,13 +342,13 @@ describe('Http Backend Service', () => {
         err => {
           expect(err.status).toBe(404, 'should have 404 status');
         }
-      );
+        );
     }));
 
     it('should 404 when GET unknown collection', async(() => {
       const url = 'api/unknown-collection';
       http.get(url)
-      .subscribe(
+        .subscribe(
         _ => {
           console.log(_);
           fail(`should not have found data for '${url}'`);
@@ -355,7 +356,7 @@ describe('Http Backend Service', () => {
         err => {
           expect(err.status).toBe(404, 'should have 404 status');
         }
-      );
+        );
     }));
 
     it('should use genId override to add new hero, "Maxinius"', async(() => {
@@ -369,7 +370,7 @@ describe('Http Backend Service', () => {
           expect(heroes[0].id).toBeGreaterThan(1000);
         },
         failure
-      );
+        );
     }));
 
     it('should use genId override guid generator for a new nobody without an id', async(() => {
@@ -423,8 +424,49 @@ describe('Http Backend Service', () => {
           expect(sizes.villains).toBeGreaterThan(0, 'reset should NOT clear villains');
         },
         failure
-      );
+        );
     };
+  });
+
+  ////////////////
+  describe('raw Angular Http w/ override id service', () => {
+
+    let http: Http;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [
+          HttpModule,
+          HttpInMemoryWebApiModule.forRoot(HeroInMemDataOverrideIdService, { delay })
+        ]
+      });
+
+      http = TestBed.get(Http);
+    });
+
+    it('can get heroes', async(() => {
+      http.get('api/heroes')
+        .map(res => res.json() as Hero[])
+        .subscribe(
+        heroes => {
+          // console.log(heroes);
+          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+        },
+        failure
+        );
+    }));
+
+    it('can get heroes by uuid', async(() => {
+      http.get('api/heroes/00000000-0000-0000-0000-000000000002')
+        .map(res => res.json() as Hero)
+        .subscribe(
+        hero => {
+          // console.log(heroes);
+          expect(hero.name).toEqual('Bombasto', 'should find hero Bombasto');
+        },
+        failure
+        );
+    }));
   });
 
   ////////////////
@@ -479,10 +521,10 @@ describe('Http Backend Service', () => {
         map(res => res.json() as Hero[])
       ).subscribe(
         heroes => {
-            expect(createPassThruBackend).not.toHaveBeenCalled();
-            expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
-          },
-          failure
+          expect(createPassThruBackend).not.toHaveBeenCalled();
+          expect(heroes.length).toBeGreaterThan(0, 'should have heroes');
+        },
+        failure
         );
     }));
 
@@ -551,7 +593,7 @@ describe('Http Backend Service', () => {
           expect(heroes.length).toBeGreaterThan(0, 'should have data.heroes');
         },
         failure
-      );
+        );
     }));
 
   });
