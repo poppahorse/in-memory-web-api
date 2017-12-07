@@ -403,7 +403,7 @@ export abstract class BackendService {
   }
 
   /**
-   * set the key (by id property name) of a item for a collection
+   * set the key by property name of a item for a collection
    * @param item 
    * @param id 
    * @param collectionName 
